@@ -43,6 +43,7 @@ function setOptionsAndConnect(overrides) {
 function setOverrides(overrides) {
   if (overrides.autoConnect) options.autoConnect = overrides.autoConnect == 'true';
   if (overrides.path) options.path = overrides.path;
+  if (overrides.port) options.port = overrides.port;
   if (overrides.timeout) options.timeout = overrides.timeout;
   if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
   if (overrides.reload) options.reload = overrides.reload !== 'false';
@@ -81,8 +82,17 @@ function EventSourceWrapper() {
     }
   }, options.timeout / 2);
 
-  function init() {
-    source = new window.EventSource(options.path);
+  function init() {s
+    var url = options.path;
+    if (options.port) {
+      url = [
+        window.location.protocol, '//', 
+        window.location.hostname,
+        ':', options.port,
+        '/', options.path.replace(/^\/*/g, '')
+      ].join('');
+    }
+    source = new window.EventSource(url);
     source.onopen = handleOnline;
     source.onerror = handleDisconnect;
     source.onmessage = handleMessage;

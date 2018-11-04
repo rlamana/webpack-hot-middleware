@@ -380,6 +380,49 @@ describe("client", function() {
     });
   });
 
+  context("with port options", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = '?port=3500'; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        }),
+        location: {
+          protocol: 'http:',
+          hostname: 'localhost'
+        }
+      };
+    });
+    beforeEach(loadClient);
+    it("should connect to http://localhost:3500/__webpack_hmr", function() {
+      sinon.assert.calledOnce(window.EventSource);
+      sinon.assert.calledWithNew(window.EventSource);
+      sinon.assert.calledWith(window.EventSource, 'http://localhost:3500/__webpack_hmr');
+    });
+  });
+
+  context("with port options and custom path", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = '?port=8080&path=/foo/__webpack_hmr'; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        }),
+        location: {
+          protocol: 'https:',
+          hostname: 'localhost',
+          port: '9000'
+        }
+      };
+    });
+    beforeEach(loadClient);
+    it("should connect to https://localhost:8080/foo/__webpack_hmr", function() {
+      sinon.assert.calledOnce(window.EventSource);
+      sinon.assert.calledWithNew(window.EventSource);
+      sinon.assert.calledWith(window.EventSource, 'https://localhost:8080/foo/__webpack_hmr');
+    });
+  });
+
   context("with no browser environment", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle

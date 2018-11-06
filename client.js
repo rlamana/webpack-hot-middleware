@@ -82,7 +82,7 @@ function EventSourceWrapper() {
     }
   }, options.timeout / 2);
 
-  function init() {s
+  function init() {
     var url = options.path;
     if (options.port) {
       url = [
